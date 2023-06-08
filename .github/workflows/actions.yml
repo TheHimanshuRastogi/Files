@@ -1,0 +1,38 @@
+name: Music
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create_video:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: checkout repo content
+        uses: actions/checkout@v2 
+
+      - name: setup python 
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9' 
+
+      - name: install ImageMagick 
+        run: |
+          sudo apt install imagemagick
+          
+      - name: Update ImageMagick policy file
+        run: |
+          sudo cat /etc/ImageMagick-6/policy.xml | sed 's/none/read,write/g'> /etc/ImageMagick-6/policy.xml
+          
+      - name: Download credentials.json
+        run: curl -o credentials.json 'https://gist.githubusercontent.com/TheHimanshuRastogi/96c758d6de06b0de009d304031bee5f1/raw'
+        
+      - name: install python packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install yt_dlp==2023.3.4
+          pip install moviepy==1.0.3
+          pip install gspread==5.9.0
+
+      - name: execute py script
+        run: python main.py
